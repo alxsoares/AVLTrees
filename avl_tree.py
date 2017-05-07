@@ -18,9 +18,9 @@ class Node(object):
 		# not sure if this is correct
 		if not node.right_child and not node.left_child:
 			self.height = 0
-		else if not node.right_child:
+		elif not node.right_child:
 			self.height = (node.left_child.height + 1)
-		else if not node.left_child:
+		elif not node.left_child:
 			self.height = (node.right_child.height + 1)
 		else:	
 			self.height = (max(node.left_child.height, node.right_child.height) + 1)
@@ -40,13 +40,13 @@ class AVLTree(object):
 		while current is not None:
 			if current.data == data:
 				return current
-			else if current.data > data:
+			elif current.data > data:
 				current = current.left_child
 				continue
-			else if current.data < data:
+			elif current.data < data:
 				current = current.right_child
 				continue
-		raise ValueError, '%s not found in tree.' % (data)
+		raise ValueError('%s not found in tree.' % (data))
 
 	
 	def insert(self, data):
@@ -60,8 +60,8 @@ class AVLTree(object):
 		while current is not None:
 			if current.data == data:
 				# do nothing? raise error?
-				raise ValueError, '%s already in tree.' % (data)
-			else if current.data > data:
+				raise ValueError('%s already in tree.' % (data))
+			elif current.data > data:
 				if not current.left_child:
 					current.left_child = n
 					n.parent = current
@@ -71,7 +71,7 @@ class AVLTree(object):
 				else: 
 					current = current.left_child
 					continue
-			else if current.data < data:
+			elif current.data < data:
 				if not current.right_child:
 					current.right_child = n
 					n.parent = current
@@ -101,7 +101,7 @@ class AVLTree(object):
 				else:
 					self.right_rotation(current)
 
-			else if balance_factor > 1:
+			elif balance_factor > 1:
 				# right heavy
 
 				# check the right child of current to see if it's left heavy 
@@ -123,7 +123,7 @@ class AVLTree(object):
 			n = self.find(node)
 			n.data = data
 		except ValueError:
-			raise ValueError, '%s not found in tree.' % node
+			raise ValueError('%s not found in tree.' % (node))
 
 	def delete(self, node):
 		pass
