@@ -24,6 +24,18 @@ class Node(object):
 			self.height = (self.right_child.height + 1)
 		else:	
 			self.height = (max(self.left_child.height, self.right_child.height) + 1)
+		print("update_height")
+		print(self.height)
+
+	def calculate_height(self):
+		"""Return the number of edges on the longest downward path from this
+		node to a descendant leaf node"""
+		# TODO: Check if left child has a value and if so calculate its height
+		left_height = self.left_child.height if self.left_child is not None else -1
+		# TODO: Check if right child has a value and if so calculate its height
+		right_height = self.right_child.height if self.right_child is not None else -1
+		# Return one more than the greater of the left height and right height
+		return 1 + max(left_height, right_height)
 
 
 
@@ -86,8 +98,15 @@ class AVLTree(object):
 	def retrace_loop(self, node):
 		current = node.parent
 		while current is not None: 
+			print("calculate height")
+			print(current.calculate_height())
 			current.update_height()
+
 			balance_factor = current.balance_factor()
+			print("balance factor: %d" % balance_factor)
+			if (-2 <= balance_factor <= 2):
+				print("exit")
+				return
 			if balance_factor < -1:
 				# right heavy
 				if current.right_child:
@@ -97,6 +116,7 @@ class AVLTree(object):
 						# right left 
 						self.right_rotation(current.right_child)
 					self.left_rotation(current)
+					current = current.parent
 					continue
 				else: 
 					# left
@@ -111,14 +131,17 @@ class AVLTree(object):
 						# left right 
 						self.left_rotation(current.left_child)
 					self.right_rotation(current)
+					current = current.parent
 					continue
 				else:
 					# right
 					self.right_rotation(current)
 			else: 
 				# balanced
+				print("balanced")
+				current = current.parent
 				pass
-			current = current.parent
+			# current = current.parent
 
 	def update(self, node, data):
 		try: 
@@ -150,14 +173,17 @@ class AVLTree(object):
 		if new_parents_parent is None:
 			# new_parent is becoming the tree's root
 			self.root = new_parent
+			new_parent.parent = None
 		else:
 			if node.data > new_parents_parent.data:
 				new_parents_parent.right_child = new_parent
 			else: 
 				new_parents_parent.left_child = new_parent
+			new_parent.parent = new_parents_parent
 
 		new_parent.left_child = new_left_child
 		new_left_child.parent = new_parent
+		new_left_child.right_child = None
 
 
 	def right_rotation(self, node):
@@ -177,22 +203,26 @@ class AVLTree(object):
 		if new_parents_parent is None:
 			# new_parent is becoming the tree's root
 			self.root = new_parent
+			new_parent.parent = None
 		else:
 			# check to see if this is the left or right child of the parent node
 			if node.data > new_parents_parent.data:
 				new_parents_parent.right_child = new_parent
 			else: 
 				new_parents_parent.left_child = new_parent
+			new_parent.parent = new_parents_parent
 
 		new_parent.right_child = new_right_child
+		new_parent.parent = new_parents_parent
 		new_right_child.parent = new_parent
+		new_right_child.left_child = None
 
 
 if __name__ == "__main__":
 	avl_tree = AVLTree()
 	avl_tree.insert(1)
 	avl_tree.insert(2)
-	# avl_tree.insert(3)
+	avl_tree.insert(3)
 	# avl_tree = AVLTree([1,2,3])
 	# avl_tree.insert(4)
 	# avl_tree.insert(5)
