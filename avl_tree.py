@@ -14,16 +14,16 @@ class Node(object):
 	def balance_factor(self):
 		return (self.left_child.height if self.left_child else -1) - (self.right_child.height if self.right_child else -1)
 		
-	def update_height(self, node):
+	def update_height(self):
 		# not sure if this is correct
-		if not node.right_child and not node.left_child:
+		if not self.right_child and not self.left_child:
 			self.height = 0
-		elif not node.right_child:
-			self.height = (node.left_child.height + 1)
-		elif not node.left_child:
-			self.height = (node.right_child.height + 1)
+		elif not self.right_child:
+			self.height = (self.left_child.height + 1)
+		elif not self.left_child:
+			self.height = (self.right_child.height + 1)
 		else:	
-			self.height = (max(node.left_child.height, node.right_child.height) + 1)
+			self.height = (max(self.left_child.height, self.right_child.height) + 1)
 
 
 
@@ -65,7 +65,7 @@ class AVLTree(object):
 				if not current.left_child:
 					current.left_child = n
 					n.parent = current
-					# update heights of parents
+					# update heights of parents and rotate if needed
 					self.retrace_loop(n)
 					return 
 				else: 
@@ -75,7 +75,7 @@ class AVLTree(object):
 				if not current.right_child:
 					current.right_child = n
 					n.parent = current
-					# update heights of parents
+					# update heights of parents and rotate if needed
 					self.retrace_loop(n)
 					return 
 				else:
@@ -91,25 +91,26 @@ class AVLTree(object):
 			# will have to rotate on the way up, and the heights are going to change AHAHHHHAHHHHHHHHH 
 			if balance_factor < -1:
 				# left heavy
-				
-				# check the left child of current to see if it's right heavy 
-				left_child_balance_factor = current.left_child.balance_factor()
-				if left_child_balance_factor > 1:
-					# left right 
-					self.left_rotation(current.left_child)
-					self.right_rotation(current)
+				if current.left_child:			
+					# check the left child of current to see if it's right heavy 
+					left_child_balance_factor = current.left_child.balance_factor()
+					if left_child_balance_factor > 1:
+						# left right 
+						self.left_rotation(current.left_child)
+						self.right_rotation(current)
 				else:
+					# right
 					self.right_rotation(current)
 
 			elif balance_factor > 1:
 				# right heavy
-
-				# check the right child of current to see if it's left heavy 
-				right_child_balance_factor = current.right_child.balance_factor()
-				if right_child_balance_factor < -1:
-					# right left 
-					self.right_rotation(current.right_child)
-					self.left_rotation(current)
+				if current.right_child:
+					# check the right child of current to see if it's left heavy 
+					right_child_balance_factor = current.right_child.balance_factor()
+					if right_child_balance_factor < -1:
+						# right left 
+						self.right_rotation(current.right_child)
+						self.left_rotation(current)
 				else: 
 					# left
 					self.left_rotation(current)
@@ -132,12 +133,55 @@ class AVLTree(object):
 	# 	return balance_factor(node) >= 1 
 
 	def left_rotation(self, node):
-		pass
+		# o    // node 
+		#  \
+		#   o  // node.right_child
+		#    \
+		# 	  o
+
+		# nodes right child becomes parent, node becomes left child
+		new_left_child = node 
+		new_parent = node.right_child
+
+		new_parents_parent = node.parent 
+
+		if node.data > new_parents_parent.data:
+			new_parents_parent.right_child = new_parent
+		else: 
+			new_parents_parent.left_child = new_parent
+
+		new_parent.left_child = new_left_child
+		new_left_child.parent = new_parent
+
 
 	def right_rotation(self, node):
-		pass
+		# 	  o // node
+		#    /
+		#   o   // node.left_child
+		#  /
+		# o
 
-	
+		# nodes left child becomes parent, node becomes right child
 
+		new_right_child = node 
+		new_parent = node.left_child
+
+		new_parents_parent = node.parent
+		if new_parents_parent is None:
+			# new_parent is becoming the tree's root
+			self.root = new_parent
+		else:
+			# check to see if this is the left or right child of the parent node
+			if node.data > new_parents_parent.data:
+				new_parents_parent.right_child = new_parent
+			else: 
+				new_parents_parent.left_child = new_parent
+
+		new_parent.right_child = new_right_child
+		new_right_child.parent = new_parent
+
+
+if __name__ == "__main__":
+	pass
 
 

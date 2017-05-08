@@ -6,7 +6,7 @@ class NodeTest(unittest.TestCase):
 	def test_init(self):
 		data = 'a'
 		n = Node(data)
-		assert n.data = 'a'
+		assert n.data == 'a'
 		assert n.left_child is None
 		assert n.right_child is None
 
@@ -15,11 +15,11 @@ class AVLTreeTest(unittest.TestCase):
 
 	def test_init(self):
 		avl_tree = AVLTree()
-		assert self.root is None 
+		assert avl_tree.root is None 
 	
 	def test_init_with_iterable(self):
-		data = ['a', 'b', 'c']
+		data = [1, 2, 3]
 		avl_tree = AVLTree(data)
-		assert self.root == 'b'
-		assert self.root.left_child == 'a'
-		assert self.root.right_child == 'c'
+		assert avl_tree.root == 2
+		assert avl_tree.root.left_child == 1
+		assert avl_tree.root.right_child == 3
