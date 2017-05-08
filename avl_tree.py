@@ -88,21 +88,7 @@ class AVLTree(object):
 		while current is not None: 
 			current.update_height()
 			balance_factor = current.balance_factor()
-			# will have to rotate on the way up, and the heights are going to change AHAHHHHAHHHHHHHHH 
 			if balance_factor < -1:
-				# left heavy
-				if current.left_child:			
-					# check the left child of current to see if it's right heavy 
-					left_child_balance_factor = current.left_child.balance_factor()
-					if left_child_balance_factor > 1:
-						# left right 
-						self.left_rotation(current.left_child)
-						self.right_rotation(current)
-				else:
-					# right
-					self.right_rotation(current)
-
-			elif balance_factor > 1:
 				# right heavy
 				if current.right_child:
 					# check the right child of current to see if it's left heavy 
@@ -110,10 +96,25 @@ class AVLTree(object):
 					if right_child_balance_factor < -1:
 						# right left 
 						self.right_rotation(current.right_child)
-						self.left_rotation(current)
+					self.left_rotation(current)
+					continue
 				else: 
 					# left
 					self.left_rotation(current)
+
+			elif balance_factor > 1:
+				# left heavy
+				if current.left_child:			
+					# check the left child of current to see if it's right heavy 
+					left_child_balance_factor = current.left_child.balance_factor()
+					if left_child_balance_factor > 1:
+						# left right 
+						self.left_rotation(current.left_child)
+					self.right_rotation(current)
+					continue
+				else:
+					# right
+					self.right_rotation(current)
 			else: 
 				# balanced
 				pass
@@ -133,6 +134,7 @@ class AVLTree(object):
 	# 	return balance_factor(node) >= 1 
 
 	def left_rotation(self, node):
+		print("LEFT!")
 		# o    // node 
 		#  \
 		#   o  // node.right_child
@@ -145,16 +147,21 @@ class AVLTree(object):
 
 		new_parents_parent = node.parent 
 
-		if node.data > new_parents_parent.data:
-			new_parents_parent.right_child = new_parent
-		else: 
-			new_parents_parent.left_child = new_parent
+		if new_parents_parent is None:
+			# new_parent is becoming the tree's root
+			self.root = new_parent
+		else:
+			if node.data > new_parents_parent.data:
+				new_parents_parent.right_child = new_parent
+			else: 
+				new_parents_parent.left_child = new_parent
 
 		new_parent.left_child = new_left_child
 		new_left_child.parent = new_parent
 
 
 	def right_rotation(self, node):
+		print("RIGHT!")
 		# 	  o // node
 		#    /
 		#   o   // node.left_child
@@ -182,6 +189,12 @@ class AVLTree(object):
 
 
 if __name__ == "__main__":
-	pass
+	avl_tree = AVLTree()
+	avl_tree.insert(1)
+	avl_tree.insert(2)
+	# avl_tree.insert(3)
+	# avl_tree = AVLTree([1,2,3])
+	# avl_tree.insert(4)
+	# avl_tree.insert(5)
 
 
