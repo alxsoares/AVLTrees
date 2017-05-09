@@ -12,14 +12,10 @@ class Node(object):
 		"""Return a string representation of this node"""
 		return 'Node({})'.format(repr(self.data))
 
-	def is_leaf(self):
-		return (self.height == 0)
-
 	def balance_factor(self):
 		return (self.left_child.height if self.left_child else -1) - (self.right_child.height if self.right_child else -1)
 
 	def update_height(self):
-		# not sure if this is correct
 		if not self.right_child and not self.left_child:
 			self.height = 0
 		elif not self.right_child:
@@ -28,18 +24,17 @@ class Node(object):
 			self.height = (self.right_child.height + 1)
 		else:
 			self.height = (max(self.left_child.height, self.right_child.height) + 1)
-		print("update_height")
-		print(self.height)
 
-	def calculate_height(self):
-		"""Return the number of edges on the longest downward path from this
-		node to a descendant leaf node"""
-		# TODO: Check if left child has a value and if so calculate its height
-		left_height = self.left_child.height if self.left_child is not None else -1
-		# TODO: Check if right child has a value and if so calculate its height
-		right_height = self.right_child.height if self.right_child is not None else -1
-		# Return one more than the greater of the left height and right height
-		return 1 + max(left_height, right_height)
+	# # Recursive calculation of height -- can be removed
+	# def calculate_height(self):
+	# 	"""Return the number of edges on the longest downward path from this
+	# 	node to a descendant leaf node"""
+	# 	# TODO: Check if left child has a value and if so calculate its height
+	# 	left_height = self.left_child.height if self.left_child is not None else -1
+	# 	# TODO: Check if right child has a value and if so calculate its height
+	# 	right_height = self.right_child.height if self.right_child is not None else -1
+	# 	# Return one more than the greater of the left height and right height
+	# 	return 1 + max(left_height, right_height)
 
 
 
@@ -73,7 +68,9 @@ class AVLTree(object):
 		raise ValueError('%s not found in tree.' % (data))
 
 	def insert(self, data):
-		# find location to insert data into bst
+		# print('')
+		# print('Inserting ({}) ...'.format(data))
+
 		n = Node(data)
 		if self.root is None:
 			self.root = n
@@ -106,25 +103,23 @@ class AVLTree(object):
 					continue
 
 	def retrace_loop(self, node):
-		print('retrace_loop({})'.format(node))
+		# print('retrace_loop({})'.format(node))
+
 		current = node.parent
 		while current is not None:
-			print('current: {}'.format(current))
-			print("calculate height")
-			print(current.calculate_height())
+			# print('current: {}'.format(current))
+
 			current.update_height()
 
 			balance_factor = current.balance_factor()
-			print('balance_factor: {}'.format(balance_factor))
-			if not (-2 <= balance_factor <= 2):
-				print('ABORT MISSION! Tree is too unbalanced to fix :-(')
-				return
+			# print('balance_factor: {}'.format(balance_factor))
+			
 			if balance_factor < -1:
 				# right heavy
 				if current.right_child:
 					# check the right child of current to see if it's left heavy
 					right_child_balance_factor = current.right_child.balance_factor()
-					if right_child_balance_factor < -1:
+					if right_child_balance_factor >= 1:
 						# right left
 						self.right_rotation(current.right_child)
 					self.left_rotation(current)
@@ -139,7 +134,7 @@ class AVLTree(object):
 				if current.left_child:
 					# check the left child of current to see if it's right heavy
 					left_child_balance_factor = current.left_child.balance_factor()
-					if left_child_balance_factor > 1:
+					if left_child_balance_factor <= -1:
 						# left right
 						self.left_rotation(current.left_child)
 					self.right_rotation(current)
@@ -150,10 +145,7 @@ class AVLTree(object):
 					self.right_rotation(current)
 			else:
 				# balanced
-				print("balanced")
 				current = current.parent
-				pass
-			# current = current.parent
 
 	def update(self, node, data):
 		try:
@@ -162,11 +154,9 @@ class AVLTree(object):
 		except ValueError:
 			raise ValueError('%s not found in tree.' % (node))
 
-	# def rebalance_necessary(self, node):
-	# 	return balance_factor(node) >= 1
-
 	def left_rotation(self, node):
-		print('left_rotation({})'.format(node))
+		# print('left_rotation({})'.format(node))
+
 		# o    // node
 		#  \
 		#   o  // node.right_child
@@ -175,6 +165,7 @@ class AVLTree(object):
 
 		# nodes right child becomes parent, node becomes left child
 		new_left_child = node
+		new_right_child_of_left_child = node.right_child.left_child
 		new_parent = node.right_child
 
 		new_parents_parent = node.parent
@@ -184,23 +175,24 @@ class AVLTree(object):
 			self.root = new_parent
 			new_parent.parent = None
 		else:
+			# check to see if this is the left or right child of the parent node
 			if node.data > new_parents_parent.data:
 				new_parents_parent.right_child = new_parent
-
 			else:
 				new_parents_parent.left_child = new_parent
 			new_parent.parent = new_parents_parent
 
 		new_parent.left_child = new_left_child
 		new_left_child.parent = new_parent
-		new_left_child.right_child = None
+		new_left_child.right_child = new_right_child_of_left_child
+		if new_right_child_of_left_child:
+			new_right_child_of_left_child.parent = new_left_child
 		new_left_child.update_height()
 		new_parent.update_height()
 
-		print('left_rotation complete')
-
 	def right_rotation(self, node):
-		print('right_rotation({})'.format(node))
+		# print('right_rotation({})'.format(node))
+
 		# 	  o // node
 		#    /
 		#   o   // node.left_child
@@ -208,8 +200,8 @@ class AVLTree(object):
 		# o
 
 		# nodes left child becomes parent, node becomes right child
-
 		new_right_child = node
+		new_left_child_of_right_child = node.left_child.right_child
 		new_parent = node.left_child
 
 		new_parents_parent = node.parent
@@ -226,12 +218,12 @@ class AVLTree(object):
 			new_parent.parent = new_parents_parent
 
 		new_parent.right_child = new_right_child
-		new_parent.parent = new_parents_parent
 		new_right_child.parent = new_parent
-		new_right_child.left_child = None
+		new_right_child.left_child = new_left_child_of_right_child
+		if new_left_child_of_right_child:
+			new_left_child_of_right_child.parent = new_right_child
 		new_right_child.update_height()
 		new_parent.update_height()
-		print('right_rotation complete')
 
 	def items_level_order(self):
 		"""Return a list of all items in this binary search tree found using
@@ -265,19 +257,21 @@ class AVLTree(object):
 
 
 if __name__ == "__main__":
-	# Start with an empty AVL tree
-	avl_tree = AVLTree()
-	max_num = 3
-	for item in range(1, max_num + 1):
-		print('Inserting {} into tree...'.format(item))
-		avl_tree.insert(item)
-		print('items in level-order: {}'.format(avl_tree.items_level_order()))
-		print('\n')
-	# Start with a balanced AVL tree with 3 nodes
+
+	# # Start with an empty AVL tree
+	# avl_tree = AVLTree()
+	# max_num = 3
+	# for item in range(1, max_num + 1):
+	# 	print('Inserting {} into tree...'.format(item))
+	# 	avl_tree.insert(item)
+	# 	print('items in level-order: {}'.format(avl_tree.items_level_order()))
+	# 	print('\n')
+
+
+	# # Start with a balanced AVL tree with 3 nodes
 	# avl_tree = AVLTree([2,1,3])
 	# print('items in level-order: {}'.format(avl_tree.items_level_order()))
 	# print('Inserting {} into tree...'.format(4))
-
 	# avl_tree.insert(4)
 	# print('items in level-order: {}'.format(avl_tree.items_level_order()))
 	# print('')
@@ -285,3 +279,11 @@ if __name__ == "__main__":
 	# avl_tree.insert(5)  # Should trigger rebalance
 	# print('items in level-order: {}'.format(avl_tree.items_level_order()))
 	# print('')
+
+	# # Start with an empty AVL tree for left-right right_rotation
+	# data = [1, 4, 8, 12, 16, 20, 25, 30, 35, 28]
+	data = [1, 8, 4]
+	print('Inserting: {}'.format(data))
+	avl_tree = AVLTree(data)
+	print('items in level-order: {}'.format(avl_tree.items_level_order()))
+

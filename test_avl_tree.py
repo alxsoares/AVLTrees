@@ -40,12 +40,22 @@ class AVLTreeTest(unittest.TestCase):
 		assert avl_tree.items_level_order() == [2, 1, 3]
 
 	def test_left_right_rotation(self):
-		data = [10, 6, 20, 1, 17, 30, 15, 19, 14]
+		data = [1, 4, 8, 12, 16, 20, 25, 30, 35, 28]
 		avl_tree = AVLTree(data)
-		assert avl_tree.root.data == 17
-		assert avl_tree.items_level_order() == data
+		assert avl_tree.root.data == 12
+		assert avl_tree.items_level_order() == [12, 4, 25, 1, 8, 20, 30, 16, 28, 35]
+		# data = [1, 8, 4]
+		# avl_tree = AVLTree(data)
+		# assert avl_tree.root.data == 4
+		# assert avl_tree
+
 
 	def test_right_left_rotation(self):
-		pass
+		data = [8, 1, 4]
+		avl_tree = AVLTree(data)
+		assert avl_tree.root.data == 4
+		assert avl_tree.items_level_order() == [4, 1, 8]
+		# data = [10, 20, 30, 40, 50]
+		
 
 
