@@ -282,7 +282,7 @@ if __name__ == "__main__":
 
 	# # Start with an empty AVL tree for left-right right_rotation
 	# data = [1, 4, 8, 12, 16, 20, 25, 30, 35, 28]
-	data = [1, 8, 4]
+	data = [20, 10, 40, 30, 50, 55]
 	print('Inserting: {}'.format(data))
 	avl_tree = AVLTree(data)
 	print('items in level-order: {}'.format(avl_tree.items_level_order()))
