@@ -186,6 +186,7 @@ class AVLTree(object):
 		else:
 			if node.data > new_parents_parent.data:
 				new_parents_parent.right_child = new_parent
+
 			else:
 				new_parents_parent.left_child = new_parent
 			new_parent.parent = new_parents_parent
@@ -193,6 +194,9 @@ class AVLTree(object):
 		new_parent.left_child = new_left_child
 		new_left_child.parent = new_parent
 		new_left_child.right_child = None
+		new_left_child.update_height()
+		new_parent.update_height()
+
 		print('left_rotation complete')
 
 	def right_rotation(self, node):
@@ -225,6 +229,8 @@ class AVLTree(object):
 		new_parent.parent = new_parents_parent
 		new_right_child.parent = new_parent
 		new_right_child.left_child = None
+		new_right_child.update_height()
+		new_parent.update_height()
 		print('right_rotation complete')
 
 	def items_level_order(self):
@@ -266,7 +272,7 @@ if __name__ == "__main__":
 		print('Inserting {} into tree...'.format(item))
 		avl_tree.insert(item)
 		print('items in level-order: {}'.format(avl_tree.items_level_order()))
-		print('')
+		print('\n')
 	# Start with a balanced AVL tree with 3 nodes
 	# avl_tree = AVLTree([2,1,3])
 	# print('items in level-order: {}'.format(avl_tree.items_level_order()))
